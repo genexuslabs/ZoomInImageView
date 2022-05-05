@@ -1,0 +1,85 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+apply from: rootProject.file('publisher-helper.gradle')
+
+ext.isReleaseVersion = !project.version.endsWith("-SNAPSHOT")
+project.group = "com.genexus.android"
+project.version = "1.0"
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                artifact(androidSourcesJar)
+                artifact(androidJavadocsJar)
+
+                signing {
+                    required { hasProperty("release") && !gradle.taskGraph.hasTask("publishReleasePublicationToLocalRepository") }
+                    def signingKey = System.getenv("GPG_KEY")
+                    def signingPassword = System.getenv("GPG_PASSPHRASE")
+                    useInMemoryPgpKeys(signingKey, signingPassword)
+                    sign publishing.publications.release
+                }
+
+                pom {
+                    name = "${project.group}:${artifactId}"
+                    description = "A zoomable ImageView for Android"
+                    url = "https://github.com/genexuslabs/ZoomInImageView"
+                    organization {
+                        name = "GeneXus S.A."
+                        url = "https://genexus.com"
+                    }
+                    licenses {
+                        license {
+                            name = "The Apache Software License, Version 2.0"
+                            url = "https://www.apache.org/licenses/LICENSE-2.0"
+                        }
+                    }
+                    developers {
+                        developer {
+                            name = "Juan Pablo González"
+                            email = "jpgonzalez@genexus.com"
+                            organization = "GeneXus S.A."
+                            organizationUrl = "https://genexus.com"
+                        }
+                    }
+                    scm {
+                        connection = "scm:git:git://github.com/genexuslabs/ZoomInImageView.git"
+                        developerConnection = "scm:git:git@github.com:genexuslabs/ZoomInImageView.git"
+                        url = "https://github.com/genexuslabs/ZoomInImageView"
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = "https://maven.pkg.github.com/genexuslabs/ZoomInImageView"
+                credentials {
+                    username = System.getenv("USERNAME")
+                    password = System.getenv("PASSWORD")
+                }
+            }
+
+            maven {
+                name = "OSSRH"
+                if (!isReleaseVersion) {
+                    url "https://s01.oss.sonatype.org/content/repositories/snapshots"
+                } else {
+                    url "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2"
+                }
+                credentials {
+                    username = System.getenv("USERNAME")
+                    password = System.getenv("PASSWORD")
+                }
+            }
+
+            maven {
+                name "Local"
+                url = "${System.env.GENEXUS_REPO}"
+            }
+        }
+    }
+}

@@ -1,0 +1,44 @@
+name: Build & Publish
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+env:
+    GPG_KEY: ${{ secrets.MAVEN_GPG_BUILDER_PRIVATE_KEY }}
+    GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_BUILDER_PASSPHRASE }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+            java-version: '11'
+            distribution: 'adopt'
+
+      - name: Build Release configuration
+        uses: gradle/gradle-build-action@v2.1.3
+        with:
+            arguments: assembleRelease
+
+      - name: Publish to GitHub Packages
+        uses: gradle/gradle-build-action@v2.1.3
+        with:
+            arguments: publishReleasePublicationToGitHubPackagesRepository
+        env:
+            USERNAME: $GITHUB_ACTOR
+            PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to Maven Central
+        uses: gradle/gradle-build-action@v2.1.3
+        with:
+            arguments: publishReleasePublicationToOSSRHRepository
+        env:
+            USERNAME: ${{ secrets.MAVEN_OSSRH_USERNAME }}
+            PASSWORD: ${{ secrets.MAVEN_OSSRH_TOKEN }}
