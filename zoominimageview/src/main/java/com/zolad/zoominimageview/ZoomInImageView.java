@@ -2,12 +2,13 @@ package com.zolad.zoominimageview;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.ImageView;
+
+import androidx.appcompat.widget.AppCompatImageView;
 
 /**
  * A zoomable ImageView for Android, can be used in AdapterView and Recyclerview.
  * */
-public class ZoomInImageView extends ImageView  {
+public class ZoomInImageView extends AppCompatImageView {
 
 
     ZoomInImageViewAttacher  attacher;

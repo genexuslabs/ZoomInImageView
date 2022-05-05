@@ -1,46 +1,32 @@
 package com.zolad.zoominimageview.sample;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.widget.ImageView;
 
-import com.zolad.zoominimageview.ZoomInImageViewAttacher;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ImageListAdapter mAdapter;
-
-    RecyclerView mRVlist;
+    RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mRVlist = (RecyclerView) findViewById(R.id.rv_imagelist);
-        mRVlist.setLayoutManager(new LinearLayoutManager(this));
-
-        mRVlist.setAdapter(mAdapter = new ImageListAdapter(this));
-
-
-        List<Integer> imglist = new ArrayList<>();
-        imglist.add(R.drawable.img_1);
-        imglist.add(R.drawable.img_3);
-        imglist.add(R.drawable.img_2);
-        imglist.add(R.drawable.img_4);
-
-        mAdapter.setImgList(imglist);
-
-
-        mAdapter.notifyDataSetChanged();
-
-
-      
-
+        ImageListAdapter adapter = new ImageListAdapter(this);
+        mRecyclerView = findViewById(R.id.rv_imagelist);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setAdapter(adapter);
+        List<Integer> imageList = new ArrayList<>();
+        imageList.add(R.drawable.img_1);
+        imageList.add(R.drawable.img_3);
+        imageList.add(R.drawable.img_2);
+        imageList.add(R.drawable.img_4);
+        adapter.setImgList(imageList);
+        adapter.notifyDataSetChanged();
     }
 }

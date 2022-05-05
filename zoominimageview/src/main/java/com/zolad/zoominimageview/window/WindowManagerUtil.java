@@ -2,9 +2,10 @@ package com.zolad.zoominimageview.window;
 
 import android.os.Build;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.WindowManager;
+
+import androidx.annotation.NonNull;
 
 
 /**
